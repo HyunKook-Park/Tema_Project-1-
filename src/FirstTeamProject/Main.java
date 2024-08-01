@@ -1,17 +1,22 @@
 package FirstTeamProject;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+import FirstTeamProject.Subject;
+import FirstTeamProject.SubjectManager;
+
 public class Main {
     public static void main(String[] args) {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
+        // SubjectManager 객체 생성
+        SubjectManager manager = new SubjectManager("Course Manager");
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            System.out.println("i = " + i);
-        }
+        // Subject 객체 생성
+        Subject math = new Subject("001", "Mathematics", Subject.SubjectType.REQUIRED);
+        Subject science = new Subject("002", "Science", Subject.SubjectType.ELECTIVE);
+
+        // 과목 추가
+        manager.addSubject(math);
+        manager.addSubject(science);
+
+        // 모든 과목 출력
+        manager.printAllSubjects();
     }
 }
