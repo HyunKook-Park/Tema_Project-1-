@@ -27,12 +27,13 @@ public class SubjectManager {
         return subjects.get(id);
     }
 
-    // Getter 메서드
-    //    SUbjectManager 객체의 이름을 반환함
-    //    객체에 대한 *정보*를 쉽게 확인할 수 있게 합
-    public String getName() {
-        return name;
-    }
+//    필수X
+//    // Getter 메서드
+//    //    SUbjectManager 객체의 이름을 반환함
+//    //    객체에 대한 *정보*를 쉽게 확인할 수 있게 합
+//    public String getName() {
+//        return name;
+//    }
 
     //    출력
     public void printAllSubjects(){
