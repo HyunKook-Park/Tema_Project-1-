@@ -2,13 +2,13 @@ package FirstTeamProject;
 
 //데이터만 작업
 //과목의 기본 정보를 저장하는 데이터 모델
-public class Subject{
+public class Subject {
 
     private String id; //과목 ID(식별자)
     private String name; //과목 이름
-    private String type; //과목 유형 (예: "과학", "역사", "수학" 등) 고
+    private SubjectType type; //과목 유형 (예: "과학", "역사", "수학" 등) (열거형으로 정의)
     //생성자 this 현재 객체 가리킴
-    public Subject(String id, String name, String type) {
+    public Subject(String id, String name, SubjectType type) {
         this.id = id;
         this.name = name;
         this.type = type;
@@ -33,13 +33,20 @@ public class Subject{
         this.name = name;
     }
 
-    public String getType() {
+    public SubjectType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(SubjectType type) {
         this.type = type;
     }
+    //Enum정의
+    public enum SubjectType{//열거형
+        REQUIRED,
+        ELECTIVE
+    }
+
+
 
 }
 
