@@ -16,7 +16,7 @@ public class Subject {
     }
 
     //getter 메서드 = id, name, type에 *접근* 할 수 있도록 함
-//setter메서드 = id, name, type 값을 *설정* 할 수 있도록 함
+    //setter메서드 = id, name, type 값을 *설정* 할 수 있도록 함
     public String getId() {
         return id;
     }
@@ -41,6 +41,7 @@ public class Subject {
         this.type = type;
     }
     //Enum정의
+//    선택하게 하려고 추가
     public enum SubjectType{//열거형
         REQUIRED,
         ELECTIVE
