@@ -16,16 +16,15 @@ class main {
 
         // 수강생 과목 조회
         studentList.get("최원용").stream().
-                forEach(f -> System.out.println("수강생 아이디 : " + f.getId()));
-
-
+                forEach(f -> System.out.println("수강생 아이디: " + f.getId()));
+        
         // 수강생 아이디 조회
         studentList.get("최원용").stream().
-                forEach(f -> System.out.println("수강생 아이디 : " + f.getSubject()));
+                forEach(f -> System.out.println("선택과목 : " + f.getSubject()));
 
         // 수강생 이름 조회
         studentList.get("최원용").stream().
-                forEach(f -> System.out.println("수강생 아이디 : " + f.getStudentName()));
+                forEach(f -> System.out.println("수강생 이름 : " + f.getStudentName()));
     }
 }
 
