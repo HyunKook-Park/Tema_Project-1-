@@ -1,53 +1,57 @@
 package FirstTeamProject;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+
+
+class main {
+    public static void main(String[] args) {
+        // 수강생 상세정보 리스트
+        Map<String, ArrayList<Student>> studentList = new HashMap<>();
+        ArrayList<Student> studentProfile = new ArrayList<>();
+
+
+        studentProfile.add(new Student("1", "최원용", "자바"));
+        studentList.put("최원용",studentProfile);
+
+
+        // 수강생 과목 조회
+        studentList.get("최원용").stream().
+                forEach(f -> System.out.println("수강생 아이디 : " + f.getId()));
+
+
+        // 수강생 아이디 조회
+        studentList.get("최원용").stream().
+                forEach(f -> System.out.println("수강생 아이디 : " + f.getSubject()));
+
+        // 수강생 이름 조회
+        studentList.get("최원용").stream().
+                forEach(f -> System.out.println("수강생 아이디 : " + f.getStudentName()));
+    }
+}
+
 
 public class Student {
-
-    // 수강생 목록 컬렉션
-    private Map<String, String> StudentList = new HashMap<>();
-
-    // 수강생 상세정보 컬렉션
-    private Map<String, String> StudentProfile = new HashMap<>();
+    final private String UNIQUEID;
     private String StudentName;
-    private String UniqueId;
+    private String Subject;
 
-    // 수강색 이름, 고유번호 등록메서드
-    public void ListSet(String StudentName, String UniqueId) {
+    public Student(String UNIQUEID, String StudentName, String Subject) {
+        this.UNIQUEID = UNIQUEID;
         this.StudentName = StudentName;
-        this.UniqueId = UniqueId;
-        StudentList.put(this.StudentName, this.StudentName + "-" + this.UniqueId);
-
+        this.Subject = Subject;
     }
 
-    // 수강생 상세정보 등록 메서드
-    public void ProfileSet(String UniqueId, String[] Subject) {
-        StudentProfile.put(UniqueId, Arrays.toString(Subject));
+    public String getId() {
+        return this.UNIQUEID;
     }
 
-    // 수강생 고유번호 조회 메서드
-    public String getUniqueId(String StudentName) {
-        return StudentList.get(StudentName);
+    public String getStudentName(){
+        return this.StudentName;
     }
 
-    // 수강생 상세정보 조회 메서드
-    public String ProfileGet(String UniqueId) {
-        return "과목 목록 : " + StudentProfile.get(UniqueId);
+    public String getSubject(){
+        return this.Subject;
     }
-
-
-    /* 테스트용 코드
-   public static void main(String[] args) {
-        Student temp = new Student();
-        String[] Subject = {"Java","객체지향","Spring"};
-        temp.ListSet("최원용","13579");
-        temp.getUniqueId("최원용");
-        temp.ProfileSet("13579", Subject);
-        System.out.println(temp.ProfileGet("13579"));
-    }
-    */
-
 
 }
+
