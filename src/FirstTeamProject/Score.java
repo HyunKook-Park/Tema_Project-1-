@@ -3,14 +3,14 @@ package FirstTeamProject;
 public class Score {
     private String scoreId;
     private String studentId;
-    private String subjectId;
+    private String subjectName;
     private int round;
     private int score;
 
-    public Score(String scoreId, String studentId, String subjectId, int round, int score) {
+    public Score(String scoreId, String studentId, String subjectName, int round, int score) {
         this.scoreId = scoreId;
         this.studentId = studentId;
-        this.subjectId = subjectId;
+        this.subjectName = subjectName;
         this.round = round;
         this.score = score;
     }
@@ -24,8 +24,8 @@ public class Score {
         return studentId;
     }
 
-    public String getSubjectId() {
-        return subjectId;
+    public String getSubjectName() {
+        return subjectName;
     }
 
     public int getRound() {

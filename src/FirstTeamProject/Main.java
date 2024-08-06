@@ -1,6 +1,5 @@
 package FirstTeamProject;
 
-import java.sql.SQLOutput;
 import java.util.*;
 
 public class Main {
@@ -168,12 +167,12 @@ public class Main {
 
         // 선택할 과목 목록 필터링
         for (Subject subject : subjectStore) {
-            if (subject.getSubjectType().equals(subjectType)) {
+            if (subject.getSubjectType().equalsIgnoreCase(subjectType)) {
                 availableSubjects.add(subject);
             }
         }
 
-        System.out.println(subjectType.equals(SUBJECT_TYPE_MANDATORY) ? "\n필수 과목 선택:" : "\n선택 과목 선택");
+        System.out.println(subjectType.equalsIgnoreCase(SUBJECT_TYPE_MANDATORY) ? "\n필수 과목 선택:" : "\n선택 과목 선택");
 
         // 과목 목록을 보여줌
         System.out.println("선택 가능한 과목 목록:");
@@ -217,7 +216,7 @@ public class Main {
         List<String> choiceSubjects = selectSubjects(SUBJECT_TYPE_CHOICE, 2);
 
         List<String> enrolledSubjectIds = new ArrayList<>();
-        // 과목 ID를 enrolledSubjectIds에 추가
+        // 과목 Name를 enrolledSubjectIds에 추가
         for (String subjectName : mandatorySubjects) {
             Optional<Subject> subjectOpt = subjectStore.stream()
                     .filter(subject -> subject.getSubjectName().equalsIgnoreCase(subjectName))
@@ -262,7 +261,7 @@ public class Main {
     private static void manageStudentStatus() {
         String studentId = getStudentId();
         Optional<Student> studentOpt = studentStore.stream()
-                .filter(s -> s.getStudentId().equals(studentId))
+                .filter(s -> s.getStudentId().equalsIgnoreCase(studentId))
                 .findFirst();
         if (studentOpt.isPresent()) {
             Student student = studentOpt.get();
@@ -285,7 +284,7 @@ public class Main {
     private static void viewStudentInfo() {
         String studentId = getStudentId();
         Optional<Student> studentOpt = studentStore.stream()
-                .filter(s -> s.getStudentId().equals(studentId))
+                .filter(s -> s.getStudentId().equalsIgnoreCase(studentId))
                 .findFirst();
         if (studentOpt.isPresent()) {
             Student student = studentOpt.get();
@@ -293,7 +292,7 @@ public class Main {
             System.out.println("이름: " + student.getStudentName());
             System.out.println("상태: " + student.getStatus());
 
-            List<String> subjects = getStudentSubjects(studentId);
+            List<String> subjects = getStudentSubjects(student.getEnrolledSubjectIds());
             System.out.println("선택한 과목명: " + subjects);
             if (subjects.isEmpty()) {
                 System.out.println("등록된 과목이 없습니다.");
@@ -308,26 +307,20 @@ public class Main {
     }
 
     // 수강생 상세 정보 조회 기능 안에서 수강생이 선택한 과목을 조회하는 기능
-    private static List<String> getStudentSubjects(String studentId) {
+    private static List<String> getStudentSubjects(List<String> enrolledSubjectIds) {
         // 학생의 점수 기록에서 과목 ID를 찾아서 중복 없이 과목 이름 목록을 반환
-        return scoreStore.stream()
-                .filter(score -> score.getStudentId().equals(studentId)) // 학생 ID로 필터링
-                .map(score -> {
                     // 과목 ID로 과목을 찾고, 해당 과목의 이름을 반환
-                    Optional<Subject> subjectOpt = subjectStore.stream()
-                            .filter(subject -> subject.getSubjectId().equals(score.getSubjectId()))
-                            .findFirst();
-                    return subjectOpt.map(Subject::getSubjectName).orElse("Unknown"); // 과목 이름 또는 "Unknown"
-                })
-                .distinct() // 중복된 과목 이름 제거
-                .toList(); // 리스트로 변환
+        return subjectStore.stream()
+                .filter(s->enrolledSubjectIds.contains(s.getSubjectId()))
+                .map(Subject::getSubjectName)
+                .toList();
     }
 
     // 수강생 정보 수정(이름
     private static void updateStudentInfo() {
         String studentId = getStudentId();
         Optional<Student> studentOpt = studentStore.stream()
-                .filter(s -> s.getStudentId().equals(studentId))
+                .filter(s -> s.getStudentId().equalsIgnoreCase(studentId))
                 .findFirst();
 
         if (studentOpt.isPresent()) {
@@ -343,8 +336,9 @@ public class Main {
             if (newStatus.equalsIgnoreCase("Green") || newStatus.equalsIgnoreCase("yellow") || newStatus.equalsIgnoreCase("red")) {
                 student.setStatus(newStatus);
                 student = new Student(studentId, newName);
-                studentStore.removeIf(s -> s.getStudentId().equals(studentId));
+                studentStore.removeIf(s -> s.getStudentId().equalsIgnoreCase(studentId));
                 studentStore.add(student);
+
                 System.out.println("정보 수정 완료!");
             } else {
                 System.out.println("잘못된 상태입니다.");
@@ -361,7 +355,7 @@ public class Main {
 
         if (status.equalsIgnoreCase("green") || status.equalsIgnoreCase("yellow") || status.equalsIgnoreCase("red")) {
             List<Student> filteredStudents = studentStore.stream()
-                    .filter(s -> s.getStatus().toLowerCase().equals(status))
+                    .filter(s -> s.getStatus().equalsIgnoreCase(status))
                     .toList();
 
             if (filteredStudents.isEmpty()) {
@@ -380,14 +374,14 @@ public class Main {
     private static void deleteStudent() {
         String studentId = getStudentId();
         Optional<Student> studentOpt = studentStore.stream()
-                .filter(s -> s.getStudentId().equals(studentId))
+                .filter(s -> s.getStudentId().equalsIgnoreCase(studentId))
                 .findFirst();
 
         if (studentOpt.isPresent()) {
             // 일방적으로 ID 와 같은 고유 식별자를 사용하여 리스트에서 객체를 제거할 때는 'removeIf' 더 간결하고 직접적인 방법.
             // Optional을 사용하여, studentOpt.ifPresent(stuendtStore::remove); 를 상횰 경우 객체를 찾는 작업을 추가로 해야함.
-            studentStore.removeIf(s -> s.getStudentId().equals(studentId));
-            scoreStore.removeIf(s -> s.getStudentId().equals(studentId));
+            studentStore.removeIf(s -> s.getStudentId().equalsIgnoreCase(studentId));
+            scoreStore.removeIf(s -> s.getStudentId().equalsIgnoreCase(studentId));
             System.out.println("수강생과 관련된 기록이 모두 삭제되었습니다.");
         } else {
             System.out.println("존재하지 않는 수강생입니다.");
@@ -448,7 +442,7 @@ public class Main {
         //  Optional 객체의 'get()' 메서드는 내부에 값이 존재할 때만 호출 가능 -> 값이 없을 경우 'NosuchElementExceotion' 발생
         //  따라서 'get()' 메서드를 호출하기 전에 값이 존재하는지 확인하는 것이 좋다(아래 처럼) -> 예외 방지
         if (subject.isPresent()) {
-            scoreStore.add(new Score(sequence(INDEX_TYPE_SCORE), studentId, subject.get().getSubjectId(), round, score));
+            scoreStore.add(new Score(sequence(INDEX_TYPE_SCORE), studentId, subject.get().getSubjectName(), round, score));
             System.out.println("\n 점수 등록 성공!");
         } else {
             System.out.println("존재하지 않는 과목입니다.");
@@ -478,7 +472,7 @@ public class Main {
             return;
         }
         Optional<Score> score = scoreStore.stream()
-                .filter(s -> s.getStudentId().equals(studentId) && s.getSubjectId().equals(subjectName) && s.getRound() == round)
+                .filter(s -> s.getStudentId().equalsIgnoreCase(studentId) && s.getSubjectName().equalsIgnoreCase(subjectName) && s.getRound() == round)
                 .findFirst();
 
         //  Optional 객체의 'get()' 메서드는 내부에 값이 존재할 때만 호출 가능 -> 값이 없을 경우 'NosuchElementExceotion' 발생
@@ -494,34 +488,41 @@ public class Main {
     // 수강생의 특정 과목 회차별 등급 조회
     private static void inquireRoundGradeBySubject() {
         String studentId = getStudentId(); // 관리할 수강생 고유 번호
-        // 기능 구현 (조회할 특정 과목)
+// 기능 구현 (조회할 특정 과목)
         System.out.println("회차별 등급을 조회합니다...");
         System.out.println("과목명을 입력하세요: ");
         String subjectName = sc.next();
+        System.out.println("회차를 입력하세요: ");
         int round = sc.nextInt();
-        // 기능 구현
-        Optional<Score> score = scoreStore.stream()
-                .filter(s -> s.getStudentId().equals(studentId) && s.getSubjectId().equals(subjectName) && s.getRound() == round)
-                .findFirst();
-
-        //  Optional 객체의 'get()' 메서드는 내부에 값이 존재할 때만 호출 가능 -> 값이 없을 경우 'NosuchElementExceotion' 발생
-        //  따라서 'get()' 메서드를 호출하기 전에 값이 존재하는지 확인하는 것이 좋다(아래 처럼) -> 예외 방지
-        if (score.isPresent()) {
-            int scoreValue = score.get().getScore();
-            String grade = calculateGrade(subjectName, scoreValue);
-            System.out.println("점수: " + scoreValue + ", 등급: " + grade);
-        } else {
-            System.out.println("존재하지 않는 점수입니다.");
+// 기능 구현
+        for (Score score : scoreStore) {
+            System.out.println("score = " + score.getSubjectName());
         }
+
+        System.out.println(scoreStore.size());
+        System.out.println(scoreStore.get(0).getScoreId());
+        System.out.println(scoreStore.get(0).getStudentId());
+        System.out.println(scoreStore.get(0).getSubjectName());
+        System.out.println(scoreStore.get(0).getRound());
+        System.out.println(scoreStore.get(0).getScore());
+
+        Score score = scoreStore.stream()
+                .filter(s -> s.getStudentId().equalsIgnoreCase(studentId) && s.getSubjectName().equalsIgnoreCase(subjectName) && s.getRound() == round)
+                .findFirst()
+                .orElseThrow( () -> new NoSuchElementException("해당 스코어가 존재하지 않습니다." ));
+
+
+        int scoreValue = score.getScore();
+        String grade = calculateGrade(subjectName, scoreValue);
+        System.out.println("점수: " + scoreValue + ", 등급: " + grade);
     }
 
     // 수강생의 특정 과목 회차별 등급 조회에서 점수별 등급 산정
     private static String calculateGrade(String subjectName, int score) {
-        Optional<Subject> subject = subjectStore.stream()
-                .filter(s -> s.getSubjectName().equalsIgnoreCase(subjectName))
-                .findFirst();
-        if (subject.isPresent()) {
-            if (subject.get().getSubjectType().equals(SUBJECT_TYPE_MANDATORY)) {
+        Subject subject = (Subject) subjectStore.stream()
+                .filter(s->subjectName.equalsIgnoreCase(s.getSubjectName()))
+                .toList();
+            if (subject.getSubjectType().equalsIgnoreCase(SUBJECT_TYPE_MANDATORY)) {
                 if (score >= 95) return "A";
                 else if (score >= 90) return "B";
                 else if (score >= 80) return "C";
@@ -536,8 +537,6 @@ public class Main {
                 else if (score >= 50) return "F";
                 else return "N";
             }
-        }
-        return "N";
     }
 
     // 수강생의 과목별 평균 등급 조회
@@ -546,8 +545,8 @@ public class Main {
         // 수강생의 점수 기록 필터링 하여 과목별 점수 목록 가져오기
         Map<String, List<Integer>> subjectScores = new HashMap<>();
         for (Score score : scoreStore) {
-            if (score.getStudentId().equals(studentId)) {
-                subjectScores.computeIfAbsent(score.getSubjectId(), k -> new ArrayList<>()).add(score.getScore());
+            if (score.getStudentId().equalsIgnoreCase(studentId)) {
+                subjectScores.computeIfAbsent(score.getSubjectName(), k -> new ArrayList<>()).add(score.getScore());
             }
         }
         if (subjectScores.isEmpty()) {
@@ -561,7 +560,7 @@ public class Main {
             double averageScore = score.stream().mapToInt(Integer::intValue).average().orElse(0.0);
             // 과목 이름을 가져옵니다.
             Optional<Subject> subjectOpt = subjectStore.stream()
-                    .filter(subject -> subject.getSubjectName().equals(subjectId))
+                    .filter(subject -> subject.getSubjectName().equalsIgnoreCase(subjectId))
                     .findFirst();
 
             if (subjectOpt.isPresent()) {
@@ -590,16 +589,16 @@ public class Main {
             // 필수 과목에 대한 평균 등급 조회
             for(Student student : studentsByStatus) {
                 List<String> mandatorySubjectIds = subjectStore.stream()
-                        .filter(subject -> SUBJECT_TYPE_MANDATORY.equals(subject.getSubjectType()))
-                        .map(Subject::getSubjectId) // 'Subject' 객체의 'getSubjectId' 메소드 참조
+                        .filter(subject -> SUBJECT_TYPE_MANDATORY.equalsIgnoreCase(subject.getSubjectType()))
+                        .map(Subject::getSubjectName)
                         .toList();
                 Map<String, List<Integer>> subjectScores = new HashMap<>();
                 for (Score score : scoreStore) {
-                    if (score.getStudentId().equals(student.getStudentId()) && mandatorySubjectIds.contains(score.getSubjectId())) {
+                    if (score.getStudentId().equalsIgnoreCase(student.getStudentId()) && mandatorySubjectIds.contains(score.getSubjectName())) {
                     }
                 }
                 if (subjectScores.isEmpty()) {
-                    System.out.println("수강생 " + student.getStudentName() + "의 필수 괌고 점수가 없습니다.");
+                    System.out.println("수강생 " + student.getStudentName() + "의 필수 과목 점수가 없습니다.");
                     continue;
                 }
                 double totalAverage = 0;
