@@ -316,7 +316,7 @@ public class Main {
                 .toList();
     }
 
-    // 수강생 정보 수정(이름
+    // 수강생 정보 수정(이름, 상태)
     private static void updateStudentInfo() {
         String studentId = getStudentId();
         Optional<Student> studentOpt = studentStore.stream()
@@ -334,8 +334,8 @@ public class Main {
             String newStatus = sc.next().toLowerCase();
 
             if (newStatus.equalsIgnoreCase("Green") || newStatus.equalsIgnoreCase("yellow") || newStatus.equalsIgnoreCase("red")) {
+                student = new Student(studentId, newName, student.getEnrolledSubjectIds());
                 student.setStatus(newStatus);
-                student = new Student(studentId, newName);
                 studentStore.removeIf(s -> s.getStudentId().equalsIgnoreCase(studentId));
                 studentStore.add(student);
 
