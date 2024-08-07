@@ -1,56 +1,69 @@
 package FirstTeamProject;
 
-//데이터만 작업
-//과목의 기본 정보를 저장하는 데이터 모델
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Scanner;
+import java.util.stream.Collectors;
+
 public class Subject {
+    private String subjectId;
+    private String subjectName;
+    private String subjectType;
 
-    private String id; //과목 ID(식별자)
-    private String name; //과목 이름
-    private SubjectType type; //과목 유형 (예: "과학", "역사", "수학" 등) (열거형으로 정의)
-    //생성자 this 현재 객체 가리킴
-    public Subject(String id, String name, SubjectType type) {
-        this.id = id;
-        this.name = name;
-        this.type = type;
-
+    // 생성자
+    public Subject(String subjectId, String subjectName, String subjectType) {
+        this.subjectId = subjectId;
+        this.subjectName = subjectName;
+        this.subjectType = subjectType;
     }
 
-    //getter 메서드 = id, name, type에 *접근* 할 수 있도록 함
-    //setter메서드 = id, name, type 값을 *설정* 할 수 있도록 함
-    public String getId() {
-        return id;
+    // Getter 메서드
+    public String getSubjectId() {
+        return subjectId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public String getSubjectName() {
+        return subjectName;
     }
 
-    public String getName() {
-        return name;
+    public String getSubjectType() {
+        return subjectType;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    // 과목 선택 메서드
+    public static List<String> selectSubjects(String type, int count, List<Subject> subjects) {
+        List<String> subjectList = new ArrayList<>();
+        List<Subject> filteredSubjects = subjects.stream()
+                .filter(subject -> subject.getSubjectType().equals(type))
+                .collect(Collectors.toList());
+
+        for (int i = 0; i < filteredSubjects.size(); i++) {
+            System.out.println((i + 1) + ". " + filteredSubjects.get(i).getSubjectName());
+        }
+        System.out.println("과목을 선택하세요 (번호 입력): ");
+
+        Scanner sc = new Scanner(System.in);
+        for (int i = 0; i < count; i++) {
+            int input = sc.nextInt();
+            if (input < 1 || input > filteredSubjects.size()) {
+                System.out.println("잘못된 입력입니다.");
+                i--; // 잘못된 입력일 경우 다시 입력 받기
+                continue;
+            }
+            subjectList.add(filteredSubjects.get(input - 1).getSubjectName());
+        }
+        return subjectList;
     }
 
-    public SubjectType getType() {
-        return type;
-    }
+    // main 메서드는 클래스의 기능을 테스트하는 용도로 사용
+    public static void main(String[] args) {
+        // 예시: Subject 객체 생성 및 selectSubjects 메서드 호출
+        List<Subject> subjects = new ArrayList<>();
+        subjects.add(new Subject("SU001", "Java", "MANDATORY"));
+        subjects.add(new Subject("SU002", "Spring", "MANDATORY"));
+        subjects.add(new Subject("SU003", "Design Patterns", "CHOICE"));
 
-    public void setType(SubjectType type) {
-        this.type = type;
+        List<String> selectedSubjects = selectSubjects("MANDATORY", 2, subjects);
+        System.out.println("선택된 필수 과목: " + selectedSubjects);
     }
-    //Enum정의
-//    선택하게 하려고 추가
-    public enum SubjectType{//열거형
-        REQUIRED,
-        ELECTIVE
-    }
-@Override
-    public String toString(){
-        return "ID: " + id + ", Name: " + name + ", Type: " + type;
 }
-
-
-}
-

@@ -1,50 +1,35 @@
 package FirstTeamProject;
 
 public class Score {
-    private int round; // 시험 회차
-    private int score; // 점수
-    private String grade; // 등급
+    private String scoreId;
+    private String studentId;
+    private String subjectId;
+    private int score;
 
-    public Score(int round, int score) {
-        if (round < 1 || round > 10) {
-            throw new IllegalArgumentException("회차는 1에서 10 사이여야 합니다.");
-        }
-        if (score < 0 || score > 100) {
-            throw new IllegalArgumentException("점수는 0에서 100 사이여야 합니다.");
-        }
-        this.round = round;
+    public Score(String scoreId, String studentId, String subjectId, int score) {
+        this.scoreId = scoreId;
+        this.studentId = studentId;
+        this.subjectId = subjectId;
         this.score = score;
-        this.grade = calculateGrade(score);
     }
 
-    public int getRound() {
-        return round;
+    public String getScoreId() {
+        return scoreId;
+    }
+
+    public String getStudentId() {
+        return studentId;
+    }
+
+    public String getSubjectId() {
+        return subjectId;
     }
 
     public int getScore() {
         return score;
     }
 
-    public String getGrade() {
-        return grade;
-    }
-
-    private String calculateGrade(int score) {
-        if (score >= 90) {
-            return "A";
-        } else if (score >= 80) {
-            return "B";
-        } else if (score >= 70) {
-            return "C";
-        } else if (score >= 60) {
-            return "D";
-        } else {
-            return "F";
-        }
-    }
-
-    @Override
-    public String toString() {
-        return "Round: " + round + ", Score: " + score + ", Grade: " + grade;
+    public void setScore(int score) {
+        this.score = score;
     }
 }
