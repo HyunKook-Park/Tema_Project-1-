@@ -1,0 +1,25 @@
+클래스 Class
+객체지향 프로그래밍에서 객체를 정의하는 틀
+데이터, 메서드 포함
+public class Student {
+    private String id; // 학생 ID
+    private String name; // 학생 이름
+    // ... (생략)
+}
+
+
+객체 생성 (Object Creation)
+클래스 인스턴스화-> 클래스 설계도를 사용하여 실제로 메모리상에 객체를 생성하는 과정
+Student student = new Student("1", "Alice"); //Student 클래스를 인스턴스화 하여 student 객체를 만듦
+
+
+생성자
+객체를 초기화하는 특별한 메서드
+클래스와 동일한 이름을 가지며 반환 타입 없음
+public Student(String id, String name) {
+    this.id = id;
+    this.name = name;
+}
+
+리스트
+

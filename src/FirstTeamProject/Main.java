@@ -30,7 +30,7 @@ public class Main {
         // 학생 목록을 출력
         studentManager.listStudents();
 
-// ScoreManager 객체를 생성
+        // ScoreManager 객체를 생성
         ScoreManager scoreManager = new ScoreManager();
 
         // 학생의 점수를 등록
