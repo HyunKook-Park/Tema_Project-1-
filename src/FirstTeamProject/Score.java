@@ -6,6 +6,7 @@ public class Score {
     private String subjectName;
     private int round;
     private int score;
+    private String status;
 
     public Score(String scoreId, String studentId, String subjectName, int round, int score) {
         this.scoreId = scoreId;
@@ -13,6 +14,7 @@ public class Score {
         this.subjectName = subjectName;
         this.round = round;
         this.score = score;
+        this.status = "Green";
     }
 
     // Getter
@@ -38,5 +40,16 @@ public class Score {
 
     public void setScore(int newScore) {
         this.score = newScore;
+    }
+
+    @Override
+    public String toString() {
+        return "Score{" +
+                "scoreId='" + scoreId + '\'' +
+                ", studentId='" + studentId + '\'' +
+                ", subjectName='" + subjectName + '\'' +
+                ", score=" + score +
+                ", round=" + round +
+                '}';
     }
 }

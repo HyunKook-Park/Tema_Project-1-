@@ -24,7 +24,7 @@ public class Main {
         try {
             displayMainView();
         } catch (Exception e) {
-            System.out.println("\n오류 발생!\n프로그램을 종료합니다.");
+            System.out.println("\n오류 발생!\n프로그램을 종료합니다. " + e.getMessage());
         }
     }
 
@@ -183,7 +183,7 @@ public class Main {
         // 사용자가 원하는 과목을 선택하도록 유도
         while (selectedSubjects.size() < requiredCount) {
             System.out.print("선택할 과목명을 입력하세요 (남은 수: " + (requiredCount - selectedSubjects.size()) + "): ");
-            String selectedSubjectName = sc.next();
+            String selectedSubjectName = sc.nextLine();
 
             boolean found = false;
             for (Subject subject : availableSubjects) {
@@ -379,7 +379,7 @@ public class Main {
 
         if (studentOpt.isPresent()) {
             // 일방적으로 ID 와 같은 고유 식별자를 사용하여 리스트에서 객체를 제거할 때는 'removeIf' 더 간결하고 직접적인 방법.
-            // Optional을 사용하여, studentOpt.ifPresent(stuendtStore::remove); 를 상횰 경우 객체를 찾는 작업을 추가로 해야함.
+            // Optional을 사용하여, studentOpt.ifPresent(studentStore::remove); 를 상횰 경우 객체를 찾는 작업을 추가로 해야함.
             studentStore.removeIf(s -> s.getStudentId().equalsIgnoreCase(studentId));
             scoreStore.removeIf(s -> s.getStudentId().equalsIgnoreCase(studentId));
             System.out.println("수강생과 관련된 기록이 모두 삭제되었습니다.");
@@ -474,7 +474,6 @@ public class Main {
         Optional<Score> score = scoreStore.stream()
                 .filter(s -> s.getStudentId().equalsIgnoreCase(studentId) && s.getSubjectName().equalsIgnoreCase(subjectName) && s.getRound() == round)
                 .findFirst();
-
         //  Optional 객체의 'get()' 메서드는 내부에 값이 존재할 때만 호출 가능 -> 값이 없을 경우 'NosuchElementExceotion' 발생
         //  따라서 'get()' 메서드를 호출하기 전에 값이 존재하는지 확인하는 것이 좋다(아래 처럼) -> 예외 방지
         if (score.isPresent()) {
@@ -495,17 +494,6 @@ public class Main {
         System.out.println("회차를 입력하세요: ");
         int round = sc.nextInt();
 // 기능 구현
-        for (Score score : scoreStore) {
-            System.out.println("score = " + score.getSubjectName());
-        }
-
-        System.out.println(scoreStore.size());
-        System.out.println(scoreStore.get(0).getScoreId());
-        System.out.println(scoreStore.get(0).getStudentId());
-        System.out.println(scoreStore.get(0).getSubjectName());
-        System.out.println(scoreStore.get(0).getRound());
-        System.out.println(scoreStore.get(0).getScore());
-
         Score score = scoreStore.stream()
                 .filter(s -> s.getStudentId().equalsIgnoreCase(studentId) && s.getSubjectName().equalsIgnoreCase(subjectName) && s.getRound() == round)
                 .findFirst()
@@ -519,24 +507,27 @@ public class Main {
 
     // 수강생의 특정 과목 회차별 등급 조회에서 점수별 등급 산정
     private static String calculateGrade(String subjectName, int score) {
-        Subject subject = (Subject) subjectStore.stream()
-                .filter(s->subjectName.equalsIgnoreCase(s.getSubjectName()))
-                .toList();
-            if (subject.getSubjectType().equalsIgnoreCase(SUBJECT_TYPE_MANDATORY)) {
-                if (score >= 95) return "A";
-                else if (score >= 90) return "B";
-                else if (score >= 80) return "C";
-                else if (score >= 70) return "D";
-                else if (score >= 60) return "F";
-                else return "N";
-            } else {
-                if (score >= 90) return "A";
-                else if (score >= 80) return "B";
-                else if (score >= 70) return "C";
-                else if (score >= 60) return "D";
-                else if (score >= 50) return "F";
-                else return "N";
-            }
+        Subject subject = subjectStore.stream()
+                .filter(s -> subjectName.equalsIgnoreCase(s.getSubjectName()))
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("과목이 존재하지 않습니다."));
+
+
+        if (subject.getSubjectType().equalsIgnoreCase(SUBJECT_TYPE_MANDATORY)) {
+            if (score >= 95) return "A";
+            else if (score >= 90) return "B";
+            else if (score >= 80) return "C";
+            else if (score >= 70) return "D";
+            else if (score >= 60) return "F";
+            else return "N";
+        } else {
+            if (score >= 90) return "A";
+            else if (score >= 80) return "B";
+            else if (score >= 70) return "C";
+            else if (score >= 60) return "D";
+            else if (score >= 50) return "F";
+            else return "N";
+        }
     }
 
     // 수강생의 과목별 평균 등급 조회
@@ -546,6 +537,7 @@ public class Main {
         Map<String, List<Integer>> subjectScores = new HashMap<>();
         for (Score score : scoreStore) {
             if (score.getStudentId().equalsIgnoreCase(studentId)) {
+                // key가 존재하지 않으면 새로운 리스트를 생성하고, 점수 추가
                 subjectScores.computeIfAbsent(score.getSubjectName(), k -> new ArrayList<>()).add(score.getScore());
             }
         }
@@ -565,7 +557,7 @@ public class Main {
 
             if (subjectOpt.isPresent()) {
                 String subjectName = subjectOpt.get().getSubjectName();
-                String grade = calculateGrade(subjectName, (int) Math.round(averageScore));
+                String grade = calculateGrade(subjectName, (int) (averageScore));
                 System.out.println("과목명: " + subjectName + ", 평균 등급: " + grade);
             } else {
                 System.out.println("존재하지 않는 과목입니다.");
@@ -579,43 +571,45 @@ public class Main {
         String status = sc.next();
 
         if (status.equalsIgnoreCase("green") || status.equalsIgnoreCase("yellow") || status.equalsIgnoreCase("red")) {
-            List<Student> studentsByStatus = studentStore.stream()
+            List<Student> studentsList = studentStore.stream()
                     .filter(s->s.getStatus().equalsIgnoreCase(status))
                     .toList();
-            if (studentsByStatus.isEmpty()) {
+
+            if (studentsList.isEmpty()) {
                 System.out.println("해당 상태의 수강생이 존재하지 않습니다.");
                 return;
             }
             // 필수 과목에 대한 평균 등급 조회
-            for(Student student : studentsByStatus) {
-                List<String> mandatorySubjectIds = subjectStore.stream()
+            for(Student student : studentsList) {
+                List<String> mandatorySubjectList = subjectStore.stream()
                         .filter(subject -> SUBJECT_TYPE_MANDATORY.equalsIgnoreCase(subject.getSubjectType()))
                         .map(Subject::getSubjectName)
                         .toList();
-                Map<String, List<Integer>> subjectScores = new HashMap<>();
+                List<Integer> mandatorySubjectScoreList = new ArrayList<>();  // 필수과목에 대한 점수 담는 리스트 생성
                 for (Score score : scoreStore) {
-                    if (score.getStudentId().equalsIgnoreCase(student.getStudentId()) && mandatorySubjectIds.contains(score.getSubjectName())) {
+                    if (score.getStudentId().equalsIgnoreCase(student.getStudentId()) && mandatorySubjectList.contains(score.getSubjectName())) {
+                        mandatorySubjectScoreList.add(score.getScore());
                     }
                 }
-                if (subjectScores.isEmpty()) {
+                if (mandatorySubjectScoreList.isEmpty()) {
                     System.out.println("수강생 " + student.getStudentName() + "의 필수 과목 점수가 없습니다.");
                     continue;
                 }
-                double totalAverage = 0;
-                int count = 0;
-
-                for(List<Integer> scores: subjectScores.values()) {
-                    double averageScore = scores.stream().mapToInt(Integer::intValue).average().orElse(0.0);
-                    totalAverage += averageScore;
-                    count++;
-                }
-                double overallAverage = totalAverage / count;
-                String grade = calculateGrade("Mandatory", (int) Math.round(overallAverage));
-
+                double averageScore = mandatorySubjectScoreList.stream().mapToInt(Integer::intValue).average().orElse(0.0);
+                String grade = calculateMandatoryGrade((int) averageScore);
                 System.out.println("수강생 이름 : " + student.getStudentName() + ", 필수 과목 평균 등급: " + grade);
             }
         }else{
             System.out.println("잘못된 상태입니다.");
         }
+    }
+
+    private static String calculateMandatoryGrade(int score) {
+            if (score >= 95) return "A";
+            else if (score >= 90) return "B";
+            else if (score >= 80) return "C";
+            else if (score >= 70) return "D";
+            else if (score >= 60) return "F";
+            else return "N";
     }
 }
